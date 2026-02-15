@@ -1,0 +1,197 @@
+import { Component, input, inject, signal, computed, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { MenuItem } from 'primeng/api';
+
+// Services
+import { LayoutService } from '../core/services/layout.service';
+import { AuthService, User } from '../core/services/auth.service';
+
+// Components
+import { UserMenu } from './user-menu';
+import { MobileDrawer } from './mobile-drawer';
+import { ClickOutsideDirective } from './click-outside.directive';
+
+
+// PrimeNG
+import { MenubarModule } from 'primeng/menubar';
+import { Tooltip } from 'primeng/tooltip';
+import { ButtonModule } from 'primeng/button';
+import { BadgeModule } from 'primeng/badge';
+import { AvatarModule } from 'primeng/avatar';
+import { SelectModule } from 'primeng/select';
+import { SystemModule } from '../core/models/system-module';
+
+interface CompanyOption {
+  label: string;
+  value: string;
+  icon?: string;
+}
+
+@Component({
+  selector: 'app-topbar',
+  standalone: true,
+  imports: [
+    CommonModule,
+    FormsModule,
+    MenubarModule,
+    UserMenu,
+    MobileDrawer,
+    ClickOutsideDirective,
+    Tooltip,
+    ButtonModule,
+    BadgeModule,
+    AvatarModule,
+    SelectModule
+  ],
+  templateUrl: './topbar.html'
+})
+export class Topbar implements OnInit {
+  currentModule = input<SystemModule | null>(null);
+
+  // Services
+  public layoutService = inject(LayoutService);
+  public authService = inject(AuthService);
+  private router = inject(Router);
+
+  // State
+  public showMobileDrawer = signal(false);
+  public showUserMenu = signal(false);
+  public currentUser = signal<User | null>(null);
+  public notificationCount = signal(3);
+
+  // Company selection
+  public selectedCompany = signal<string>('');
+  public companies = signal<CompanyOption[]>([]);
+
+  // Computed
+  public userInitials = computed(() => {
+    const user = this.currentUser();
+    if (!user) return 'U';
+    return this.getInitials(user.username);
+  });
+
+  public userName = computed(() => {
+    return this.currentUser()?.username || 'Usuario';
+  });
+
+  public userRole = computed(() => {
+    const user = this.currentUser();
+    if (!user || !user.roles || user.roles.length === 0) {
+      return 'Usuario';
+    }
+    return user.roles[0];
+  });
+
+  public userMenuItems = computed<MenuItem[]>(() => [
+    {
+      label: 'Mi Perfil',
+      icon: 'pi pi-user',
+      command: () => this.goToProfile()
+    },
+    {
+      label: 'Configuración',
+      icon: 'pi pi-cog',
+      command: () => this.goToSettings()
+    },
+    {
+      separator: true
+    },
+    {
+      label: 'Cerrar Sesión',
+      icon: 'pi pi-sign-out',
+      command: () => this.logout()
+    }
+  ]);
+
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser.set(user);
+
+      if (user) {
+        this.loadUserCompanies(user);
+      }
+    });
+  }
+
+  // TODO: Crear un servicio para manejar companies
+  private loadUserCompanies(user: User): void {
+    const companyMap: { [key: string]: string } = {
+      'I280020': 'Empresa Principal',
+      'I280030': 'Sucursal Norte',
+      'I280070': 'Sucursal Sur',
+      'I280000': 'Casa Matriz',
+      'I280010': 'Sucursal Este'
+    };
+  }
+
+  private getInitials(name: string): string {
+    if (!name) return 'U';
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+    }
+    return name.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Obtener label de la company seleccionada
+   */
+  getSelectedCompanyLabel(): string {
+    const selected = this.companies().find(c => c.value === this.selectedCompany());
+    return selected?.label || this.selectedCompany();
+  }
+
+  /**
+   * Click en menu item
+   */
+  onMenuItemClick(item: MenuItem): void {
+    if (item.command) {
+      item.command({ originalEvent: new MouseEvent('click'), item });
+    }
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/skvia']);
+  }
+
+  toggleUserMenu(): void {
+    this.showUserMenu.update(v => !v);
+  }
+
+  closeUserMenu(): void {
+    this.showUserMenu.set(false);
+  }
+
+  toggleMobileDrawer(): void {
+    this.showMobileDrawer.update(v => !v);
+  }
+
+  closeMobileDrawer(): void {
+    this.showMobileDrawer.set(false);
+  }
+
+  onCompanyChange(companyCode: string): void {
+    console.log('Company seleccionada:', companyCode);
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/skvia/profile']);
+    this.closeUserMenu();
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['/skvia/settings']);
+    this.closeUserMenu();
+  }
+
+  viewNotifications(): void {
+    console.log('Ver notificaciones');
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.closeUserMenu();
+  }
+}

@@ -1,0 +1,104 @@
+<div class="min-h-screen bg-gray-50 dark:bg-surface-900 p-6">
+  <div class="max-w-7xl mx-auto">
+
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+        {{ getGreeting() }}{{ currentUser ? ', ' + currentUser.username : '' }}
+      </h1>
+      <p class="text-gray-600 dark:text-gray-400 text-lg">
+        Selecciona un módulo para comenzar
+      </p>
+    </div>
+
+    <!-- Barra de búsqueda -->
+     <div class="mb-8">
+       <p-iconfield>
+       <p-inputicon class="pi pi-search" />
+       <input type="text" pInputText placeholder="Buscar módulos..." [(ngModel)]="searchTerm"
+             (input)="onSearchChange()" class="w-full"/>
+       </p-iconfield>
+     </div>
+
+    <!-- Grid de módulos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+
+      @for (module of filteredSystemModules; track module.id) {
+        <div
+          class="relative bg-white dark:bg-surface-800 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-200 dark:border-surface-700 overflow-hidden group"
+          (click)="navigateToModule(module)"
+          pRipple>
+
+          <!-- Badge de "Próximamente" -->
+          @if (module.comingSoon) {
+            <div class="absolute top-3 right-3 z-10">
+              <span class="bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 text-xs font-semibold px-2.5 py-1 rounded-full">
+                Próximamente
+              </span>
+            </div>
+          }
+
+          <!-- Badge de contador -->
+          @if (module.badge && module.badge > 0) {
+            <div class="absolute top-3 right-3 z-10">
+              <p-badge [value]="module.badge.toString()" severity="danger"></p-badge>
+            </div>
+          }
+
+          <!-- Contenido de la tarjeta -->
+          <div class="p-6">
+
+            <!-- Icono del módulo -->
+            <div
+              class="flex items-center justify-center w-16 h-16 rounded-2xl mb-4 transition-transform duration-300 group-hover:scale-110"
+              [ngClass]="module.bgColor">
+              <i
+                class="pi text-4xl transition-all duration-300"
+                [ngClass]="[module.icon, module.iconColor]">
+              </i>
+            </div>
+
+            <!-- Título -->
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary transition-colors">
+              {{ module.name }}
+            </h3>
+
+            <!-- Descripción -->
+            <p class="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
+              {{ module.description }}
+            </p>
+
+            <!-- Botón de acceso -->
+            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-surface-700">
+              <span class="text-primary font-semibold text-sm group-hover:translate-x-1 transition-transform">
+                {{ module.comingSoon ? 'Próximamente' : 'Acceder' }}
+              </span>
+              <i class="pi pi-arrow-right text-primary group-hover:translate-x-1 transition-transform"></i>
+            </div>
+          </div>
+
+          <!-- Efecto hover de fondo -->
+          <div class="absolute inset-0 bg-linear-to-br from-primary/0 to-primary/0 group-hover:from-primary/5 group-hover:to-primary/10 transition-all duration-300 pointer-events-none"></div>
+        </div>
+      }
+
+      <!-- Mensaje cuando no hay resultados -->
+      @if (filteredSystemModules.length === 0) {
+        <div class="col-span-full text-center py-12">
+          <i class="pi pi-inbox text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+          <p class="text-gray-500 dark:text-gray-400 text-lg">
+            No se encontraron módulos
+          </p>
+        </div>
+      }
+    </div>
+
+    <!-- Footer informativo -->
+    <div class="mt-12 text-center">
+      <p class="text-gray-500 dark:text-gray-400 text-sm">
+        Tienes acceso a {{ filteredSystemModules.length }} módulo{{ filteredSystemModules.length !== 1 ? 's' : '' }}
+      </p>
+    </div>
+
+  </div>
+</div>

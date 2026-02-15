@@ -1,0 +1,125 @@
+<div class="bg-white dark:bg-surface-900 border-b border-gray-200 dark:border-surface-700 shadow-sm">
+  <div class="mx-auto px-6 py-4">
+    <div class="flex items-center justify-between gap-6">
+
+      <!-- LEFT SECTION -->
+      <div class="flex items-center gap-4">
+
+        <!-- Mobile Menu -->
+        <button (click)="toggleMobileDrawer()"
+          class="lg:hidden w-11 h-11 rounded-xl flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-surface-800 transition-colors">
+          <i class="pi pi-bars text-xl"></i>
+        </button>
+
+        <!-- Module Info -->
+        @if(currentModule() != null) {
+        <div class="flex items-center gap-4">
+          <button class="p-3 rounded-2xl shadow-lg" [ngClass]="currentModule()!.gradient ?? currentModule()!.bgColor"
+           pTooltip="Volver al inicio"
+           tooltipPosition="bottom">
+            <i class="pi text-2xl" [class]="currentModule()!.icon" (click)="goToHome()"
+               [ngClass]="currentModule()!.iconColor || 'text-white'">
+            </i>
+          </button>
+          <div class="">
+            <h1 class="font-bold text-xl md:text-2xl text-gray-900 dark:text-white leading-tight">
+              {{ currentModule()?.name }}
+            </h1>
+          </div>
+        </div>
+        }
+
+        <nav class="hidden lg:block">
+          @if (currentModule()?.items && currentModule()?.items!.length > 0) {
+          <p-menubar [model]="currentModule()?.items" />
+          }
+        </nav>
+
+      </div>
+
+      <!-- RIGHT SECTION -->
+      <div class="flex items-center gap-3">
+
+        <!-- Company Selector -->
+        @if (companies().length > 0) {
+        <div class="hidden xl:block">
+          <p-select [(ngModel)]="selectedCompany" [options]="companies()" (onChange)="onCompanyChange($event.value)"
+            optionLabel="label" optionValue="value" placeholder="Seleccionar empresa" class="min-w-52">
+            <ng-template pTemplate="selectedItem">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-building text-blue-600 dark:text-blue-400"></i>
+                <span class="font-semibold text-sm text-gray-700 dark:text-gray-300">
+                  {{ getSelectedCompanyLabel() }}
+                </span>
+              </div>
+            </ng-template>
+            <ng-template let-company pTemplate="item">
+              <div class="flex items-center gap-2">
+                <i class="pi pi-building text-blue-600 dark:text-blue-400"></i>
+                <span>{{ company.label }}</span>
+              </div>
+            </ng-template>
+          </p-select>
+        </div>
+        }
+
+        <!-- Divider -->
+        <div class="h-10 w-px bg-gray-200 dark:bg-surface-700 mx-1 hidden sm:block"></div>
+
+        <!-- Dark Mode -->
+        <button (click)="layoutService.toggleDarkMode()"
+          [pTooltip]="layoutService.isDarkTheme ? 'Modo Claro' : 'Modo Oscuro'" tooltipPosition="bottom"
+          class="w-11 h-11 rounded-xl flex items-center justify-center hover:bg-gray-100 dark:hover:bg-surface-800 transition-colors group">
+          <i
+            [class]="layoutService.isDarkTheme ? 'pi pi-sun text-xl text-yellow-400' : 'pi pi-moon text-xl text-gray-700 group-hover:text-blue-600 transition-colors'"></i>
+        </button>
+
+        <!-- Notifications -->
+        <button (click)="viewNotifications()" pTooltip="Notificaciones" tooltipPosition="bottom"
+          class="relative w-11 h-11 rounded-xl flex items-center justify-center hover:bg-gray-100 dark:hover:bg-surface-800 transition-colors group">
+          <i
+            class="pi pi-bell text-xl text-gray-700 dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"></i>
+          @if (notificationCount() > 0) {
+          <span
+            class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ring-2 ring-white dark:ring-surface-900 animate-pulse">
+            {{ notificationCount() }}
+          </span>
+          }
+        </button>
+
+        <!-- Divider -->
+        <div class="h-10 w-px bg-gray-200 dark:bg-surface-700 mx-1 hidden sm:block"></div>
+
+        <!-- User Menu (Desktop) -->
+        <div class="hidden sm:block relative" (clickOutside)="closeUserMenu()">
+          <button (click)="toggleUserMenu()"
+            class="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-surface-800 cursor-pointer transition-all group">
+            <div class="relative">
+              <div
+                class="w-11 h-11 rounded-full bg-linear-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-base ring-2 ring-blue-200 dark:ring-blue-700 group-hover:ring-blue-300 dark:group-hover:ring-blue-600 transition-all">
+                {{ userInitials() }}
+              </div>
+              <span
+                class="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full ring-2 ring-white dark:ring-surface-900"></span>
+            </div>
+            <i class="pi text-sm text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-transform"
+              [class.pi-chevron-up]="showUserMenu()" [class.pi-chevron-down]="!showUserMenu()"
+              [class.translate-y-0.5]="showUserMenu()"></i>
+          </button>
+
+          @if (showUserMenu()) {
+          <app-user-menu [menuItems]="userMenuItems()" [isOpen]="showUserMenu()" [userName]="userName()"
+            [userRole]="userRole()" [showUserInfo]="true" (menuItemSelected)="closeUserMenu()">
+          </app-user-menu>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Drawer -->
+<app-mobile-drawer [(visible)]="showMobileDrawer" [moduleName]="currentModule()?.name"
+  [menuItems]="currentModule()?.items || []" [userMenuItems]="userMenuItems()" [currentUser]="currentUser()"
+  [companies]="companies()" [(selectedCompany)]="selectedCompany" (companyChanged)="onCompanyChange($event)">
+</app-mobile-drawer>

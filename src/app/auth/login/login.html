@@ -1,0 +1,109 @@
+<!-- src/app/auth/pages/login/login.component.html -->
+<div class="min-h-screen flex items-center justify-center bg-lienar-to-br from-blue-500 to-purple-600 p-4">
+  <div class="w-full max-w-md">
+    <!-- Card de Login -->
+    <div class="bg-white rounded-2xl shadow-2xl p-8">
+      <!-- Logo y Título -->
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary-600 rounded-full mb-4">
+          <i class="pi pi-prime text-white text-3xl"></i>
+        </div>
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">PROGRAMMING S.A.C</h1>
+        <p class="text-gray-600">Ingresa a tu cuenta</p>
+      </div>
+
+      <!-- Mensaje de Error -->
+      @if (errorMessage) {
+      <p-message severity="error" styleClass="mb-4 w-full">
+        {{ errorMessage }}
+      </p-message>
+      }
+
+      <!-- Formulario -->
+      <form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+        <!-- Email -->
+        <div class="mb-4">
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+            Email
+          </label>
+          <p-iconfield>
+            <p-inputicon class="pi pi-envelope" />
+            <input type="text" pInputText placeholder="tu@email.com" id="username" name="username"
+              [(ngModel)]="email" class="w-full" required [disabled]="loading" autocomplete="username" />
+          </p-iconfield>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="mb-4">
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+            Contraseña
+          </label>
+          <p-iconfield>
+            <p-inputicon class="pi pi-lock" />
+            <p-password id="password" name="password" [(ngModel)]="password" placeholder="Ingresa tu contraseña"
+              [toggleMask]="true" [feedback]="false" class="w-full" [inputStyleClass]="'w-full'" required
+              [disabled]="loading" autocomplete="current-password">
+            </p-password>
+          </p-iconfield>
+        </div>
+
+        <!-- Código 2FA (solo si es necesario) -->
+        @if(show2FA){
+        <div class="mb-4">
+          <label for="twoFactorCode" class="block text-sm font-medium text-gray-700 mb-2">
+            Código de autenticación
+          </label>
+          <span class="p-input-icon-left w-full">
+            <i class="pi pi-shield"></i>
+            <input pInputText id="twoFactorCode" name="twoFactorCode" [(ngModel)]="twoFactorCode" placeholder="000000"
+              class="w-full" maxlength="6" [disabled]="loading" autocomplete="one-time-code" />
+          </span>
+          <small class="text-gray-500 mt-1 block">
+            Ingresa el código de 6 dígitos de tu aplicación de autenticación
+          </small>
+        </div>
+        }
+
+        <!-- Recordarme (usa cookies persistentes) -->
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center">
+            <p-checkbox [(ngModel)]="rememberMe" [binary]="true" inputId="rememberMe" name="rememberMe"
+              [disabled]="loading">
+            </p-checkbox>
+            <label for="rememberMe" class="ml-2 text-sm text-gray-600 cursor-pointer">
+              Mantener sesión iniciada
+            </label>
+          </div>
+          <a routerLink="/auth/forgot-password" class="text-sm text-blue-600 hover:text-blue-700 font-medium">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
+
+        <!-- Botón de Login -->
+        <p-button type="submit" label="Iniciar Sesión" icon="pi pi-sign-in" styleClass="w-full" [loading]="loading"
+          [disabled]="!loginForm.valid || loading">
+        </p-button>
+      </form>
+
+      <!-- Divider -->
+      <p-divider align="center" class="my-6">
+        <span class="text-gray-500 text-sm">O</span>
+      </p-divider>
+
+      <!-- Registro -->
+      <div class="text-center">
+        <p class="text-sm text-gray-600">
+          ¿No tienes una cuenta?
+          <a routerLink="/auth/register" class="text-primary-600 hover:text-blue-700 font-medium ml-1">
+            Regístrate aquí
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-6 dark:text-white text-gray-600 text-sm">
+      <p>© 2026 Mi ERP. Todos los derechos reservados.</p>
+    </div>
+  </div>
+</div>
