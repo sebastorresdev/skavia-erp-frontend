@@ -27,8 +27,8 @@ export const routes: Routes = [
       {
         path: 'ordenes-trabajo',
         loadChildren: () =>
-          import('./features/work-order-management/work-order-management.routes').then(
-            (r) => r.workOrderManagementRoutes,
+          import('./features/ordenes-trabajo/orden-trabajo.routes').then(
+            (r) => r.OrdenesTrabajoRoutes,
           ),
       },
       {

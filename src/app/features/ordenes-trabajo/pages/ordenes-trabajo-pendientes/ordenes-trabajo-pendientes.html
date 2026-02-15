@@ -1,0 +1,226 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <p-toast />
+
+  <div class="w-full">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-gray-900 mb-2">Órdenes de Trabajo Pendientes</h1>
+      <p class="text-gray-600">Gestiona y visualiza todas las órdenes de trabajo pendientes</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-blue-100 rounded-lg p-3">
+            <i class="pi pi-list text-blue-600 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Total Órdenes</p>
+            <p class="text-2xl font-bold text-gray-900">{{ ordenes.length }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-green-100 rounded-lg p-3">
+            <i class="pi pi-check-circle text-green-600 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">A Tiempo</p>
+            <p class="text-2xl font-bold text-gray-900">{{ getOrdenesATiempo() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-yellow-100 rounded-lg p-3">
+            <i class="pi pi-exclamation-triangle text-yellow-600 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Próximas</p>
+            <p class="text-2xl font-bold text-gray-900">{{ getOrdenesProximas() }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+        <div class="flex items-center gap-3">
+          <div class="bg-red-100 rounded-lg p-3">
+            <i class="pi pi-times-circle text-red-600 text-xl"></i>
+          </div>
+          <div>
+            <p class="text-gray-600 text-sm">Vencidas</p>
+            <p class="text-2xl font-bold text-gray-900">{{ getOrdenesVencidas() }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card container -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <!-- Toolbar -->
+      <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div class="flex-1 w-full sm:w-auto">
+          <p-iconfield iconPosition="left" class="w-full sm:w-80">
+            <p-inputicon styleClass="pi pi-search" />
+            <input
+              pInputText
+              type="text"
+              placeholder="Buscar por orden, cliente, tarea..."
+              class="w-full"
+              #searchInput
+              (input)="dt.filterGlobal(searchInput.value, 'contains')"
+            />
+          </p-iconfield>
+        </div>
+        <div class="flex gap-2">
+          <p-button
+            icon="pi pi-file-excel"
+            label="Exportar"
+            severity="success"
+            (onClick)="exportarExcel()"
+            [outlined]="true"
+          />
+          <p-button
+            icon="pi pi-refresh"
+            label="Actualizar"
+            (onClick)="cargarOrdenes()"
+            [outlined]="true"
+          />
+        </div>
+      </div>
+
+      <!-- Table -->
+      <p-table
+        #dt
+        [value]="ordenes"
+        [loading]="loading"
+        [paginator]="true"
+        [rows]="10"
+        [rowsPerPageOptions]="[10, 25, 50]"
+        [globalFilterFields]="['numeroOrden', 'codigoCliente', 'nombreCompleto', 'provincia', 'distrito', 'descripcionTarea']"
+        [tableStyle]="{'min-width': '75rem'}"
+        styleClass="p-datatable-sm"
+        currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} órdenes"
+        [showCurrentPageReport]="true"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="numeroOrden" style="min-width: 140px">
+              Nº Orden
+              <p-sortIcon field="numeroOrden" />
+            </th>
+            <th pSortableColumn="numeroTarea" style="min-width: 120px">
+              Nº Tarea
+              <p-sortIcon field="numeroTarea" />
+            </th>
+            <th pSortableColumn="codigoCliente" style="min-width: 130px">
+              Código Cliente
+              <p-sortIcon field="codigoCliente" />
+            </th>
+            <th pSortableColumn="nombreCompleto" style="min-width: 200px">
+              Cliente
+              <p-sortIcon field="nombreCompleto" />
+            </th>
+            <th pSortableColumn="provincia" style="min-width: 120px">
+              Provincia
+              <p-sortIcon field="provincia" />
+            </th>
+            <th pSortableColumn="distrito" style="min-width: 130px">
+              Distrito
+              <p-sortIcon field="distrito" />
+            </th>
+            <th pSortableColumn="agendamientoLinea" style="min-width: 120px">
+              Línea
+              <p-sortIcon field="agendamientoLinea" />
+            </th>
+            <th style="min-width: 250px">Descripción Tarea</th>
+            <th pSortableColumn="fechaVencimiento" style="min-width: 160px">
+              Vencimiento
+              <p-sortIcon field="fechaVencimiento" />
+            </th>
+            <th style="min-width: 120px">Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-orden>
+          <tr class="hover:bg-gray-50">
+            <td>
+              <span class="font-semibold text-blue-700">{{ orden.numeroOrden }}</span>
+            </td>
+            <td>
+              <span class="text-gray-700">{{ orden.numeroTarea }}</span>
+            </td>
+            <td>
+              <span class="text-gray-600 font-mono text-sm">{{ orden.codigoCliente }}</span>
+            </td>
+            <td>
+              <span class="font-medium text-gray-900">{{ orden.nombreCompleto }}</span>
+            </td>
+            <td>
+              <span class="text-gray-700">{{ orden.provincia }}</span>
+            </td>
+            <td>
+              <span class="text-gray-700">{{ orden.distrito }}</span>
+            </td>
+            <td>
+              <p-tag [value]="orden.agendamientoLinea" [rounded]="true" />
+            </td>
+            <td>
+              <span class="text-gray-600 text-sm">{{ orden.descripcionTarea }}</span>
+            </td>
+            <td>
+              <div class="flex flex-col gap-1">
+                <span class="text-sm text-gray-700">
+                  {{ orden.fechaVencimiento ? (orden.fechaVencimiento | date: 'dd/MM/yyyy') : '-' }}
+                </span>
+                <p-tag
+                  [value]="getEstadoVencimiento(orden.fechaVencimiento)"
+                  [severity]="getSeverity(orden.fechaVencimiento)"
+                  [rounded]="true"
+                  styleClass="text-xs"
+                />
+              </div>
+            </td>
+            <td>
+              <p-button
+                icon="pi pi-eye"
+                [rounded]="true"
+                [text]="true"
+                severity="info"
+                (onClick)="verDetalle(orden)"
+                pTooltip="Ver detalle"
+                tooltipPosition="top"
+              />
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="10" class="text-center py-8">
+              <div class="flex flex-col items-center gap-3">
+                <i class="pi pi-inbox text-gray-400" style="font-size: 3rem"></i>
+                <p class="text-gray-600 font-medium">No se encontraron órdenes de trabajo</p>
+                <p class="text-gray-500 text-sm">Intenta ajustar los filtros de búsqueda</p>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="loadingbody">
+          <tr>
+            <td colspan="10">
+              <div class="flex items-center justify-center py-8">
+                <i class="pi pi-spin pi-spinner text-blue-600" style="font-size: 2rem"></i>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+  </div>
+</div>

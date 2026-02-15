@@ -1,4 +1,4 @@
-import { Component, input, inject, signal, computed, OnInit } from '@angular/core';
+import { Component, input, inject, signal, computed, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -7,12 +7,12 @@ import { MenuItem } from 'primeng/api';
 // Services
 import { LayoutService } from '../core/services/layout.service';
 import { AuthService, User } from '../core/services/auth.service';
+import { SucursalStateService } from '../features/ordenes-trabajo/services/sucursal-state.service';
 
 // Components
 import { UserMenu } from './user-menu';
 import { MobileDrawer } from './mobile-drawer';
 import { ClickOutsideDirective } from './click-outside.directive';
-
 
 // PrimeNG
 import { MenubarModule } from 'primeng/menubar';
@@ -27,6 +27,13 @@ interface CompanyOption {
   label: string;
   value: string;
   icon?: string;
+}
+
+interface SucursalOption {
+  label: string;
+  value: string;
+  nombre: string;
+  codigo: string;
 }
 
 @Component({
@@ -53,6 +60,7 @@ export class Topbar implements OnInit {
   // Services
   public layoutService = inject(LayoutService);
   public authService = inject(AuthService);
+  private sucursalState = inject(SucursalStateService);
   private router = inject(Router);
 
   // State
@@ -64,6 +72,26 @@ export class Topbar implements OnInit {
   // Company selection
   public selectedCompany = signal<string>('');
   public companies = signal<CompanyOption[]>([]);
+
+  // ===============================
+  // SUCURSALES - NUEVO
+  // ===============================
+
+  // Sucursales del usuario autenticado
+  public sucursales = computed(() => {
+    const user = this.currentUser();
+    if (!user || !user.sucursales) return [];
+
+    return user.sucursales.map(s => ({
+      label: s.nombre,
+      value: s.codigo,
+      nombre: s.nombre,
+      codigo: s.codigo
+    }));
+  });
+
+  // Sucursal seleccionada
+  public selectedSucursal = signal<string>('');
 
   // Computed
   public userInitials = computed(() => {
@@ -105,25 +133,24 @@ export class Topbar implements OnInit {
     }
   ]);
 
-  ngOnInit(): void {
-    this.authService.currentUser$.subscribe(user => {
-      this.currentUser.set(user);
-
-      if (user) {
-        this.loadUserCompanies(user);
+  constructor() {
+    // Inicializar sucursal seleccionada cuando se carguen las sucursales
+    effect(() => {
+      const sucursales = this.sucursales();
+      if (sucursales.length > 0 && !this.selectedSucursal()) {
+        const primeraSucursal = sucursales[0].codigo;
+        this.selectedSucursal.set(primeraSucursal);
+        // Actualizar el estado global
+        this.sucursalState.setSucursal(primeraSucursal);
+        console.log('🏢 Primera sucursal seleccionada automáticamente:', primeraSucursal);
       }
     });
   }
 
-  // TODO: Crear un servicio para manejar companies
-  private loadUserCompanies(user: User): void {
-    const companyMap: { [key: string]: string } = {
-      'I280020': 'Empresa Principal',
-      'I280030': 'Sucursal Norte',
-      'I280070': 'Sucursal Sur',
-      'I280000': 'Casa Matriz',
-      'I280010': 'Sucursal Este'
-    };
+  ngOnInit(): void {
+    this.authService.currentUser$.subscribe(user => {
+      this.currentUser.set(user);
+    });
   }
 
   private getInitials(name: string): string {
@@ -144,6 +171,33 @@ export class Topbar implements OnInit {
   }
 
   /**
+   * Obtener label de la sucursal seleccionada - NUEVO
+   */
+  getSelectedSucursalLabel(): string {
+    const selected = this.sucursales().find(s => s.codigo === this.selectedSucursal());
+    return selected?.nombre || 'Seleccionar sucursal';
+  }
+
+  /**
+   * Verificar si estamos en el módulo de Órdenes de Trabajo - NUEVO
+   */
+  isOrdenesTrabajoModule(): boolean {
+    const moduleName = this.currentModule()?.name;
+    return moduleName === 'Órdenes de Trabajo' ||
+           moduleName === 'ordenes-trabajo' ||
+           moduleName === 'Ordenes de Trabajo';
+  }
+
+  /**
+   * Cuando cambia la sucursal seleccionada - NUEVO
+   */
+  onSucursalChange(codigoSucursal: string): void {
+    this.selectedSucursal.set(codigoSucursal);
+    this.sucursalState.setSucursal(codigoSucursal);
+    console.log('✅ Sucursal seleccionada:', codigoSucursal);
+  }
+
+  /**
    * Click en menu item
    */
   onMenuItemClick(item: MenuItem): void {
@@ -153,7 +207,7 @@ export class Topbar implements OnInit {
   }
 
   goToHome(): void {
-    this.router.navigate(['/skvia']);
+    this.router.navigate(['/skavia']);
   }
 
   toggleUserMenu(): void {
@@ -177,12 +231,12 @@ export class Topbar implements OnInit {
   }
 
   goToProfile(): void {
-    this.router.navigate(['/skvia/profile']);
+    this.router.navigate(['/skavia/profile']);
     this.closeUserMenu();
   }
 
   goToSettings(): void {
-    this.router.navigate(['/skvia/settings']);
+    this.router.navigate(['/skavia/settings']);
     this.closeUserMenu();
   }
 

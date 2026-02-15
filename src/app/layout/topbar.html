@@ -40,23 +40,29 @@
       <!-- RIGHT SECTION -->
       <div class="flex items-center gap-3">
 
-        <!-- Company Selector -->
-        @if (companies().length > 0) {
+        <!-- ⭐ NUEVO: Selector de Sucursales (solo visible en módulo Órdenes de Trabajo) -->
+        @if (isOrdenesTrabajoModule() && sucursales().length > 0) {
         <div class="hidden xl:block">
-          <p-select [(ngModel)]="selectedCompany" [options]="companies()" (onChange)="onCompanyChange($event.value)"
-            optionLabel="label" optionValue="value" placeholder="Seleccionar empresa" class="min-w-52">
+          <p-select
+            [(ngModel)]="selectedSucursal"
+            [options]="sucursales()"
+            (onChange)="onSucursalChange($event.value)"
+            optionLabel="nombre"
+            optionValue="codigo"
+            placeholder="Seleccionar sucursal"
+            class="min-w-52">
             <ng-template pTemplate="selectedItem">
               <div class="flex items-center gap-2">
-                <i class="pi pi-building text-blue-600 dark:text-blue-400"></i>
+                <i class="pi pi-map-marker text-green-600 dark:text-green-400"></i>
                 <span class="font-semibold text-sm text-gray-700 dark:text-gray-300">
-                  {{ getSelectedCompanyLabel() }}
+                  {{ getSelectedSucursalLabel() }}
                 </span>
               </div>
             </ng-template>
-            <ng-template let-company pTemplate="item">
+            <ng-template let-sucursal pTemplate="item">
               <div class="flex items-center gap-2">
-                <i class="pi pi-building text-blue-600 dark:text-blue-400"></i>
-                <span>{{ company.label }}</span>
+                <i class="pi pi-map-marker text-green-600 dark:text-green-400"></i>
+                <span>{{ sucursal.nombre }}</span>
               </div>
             </ng-template>
           </p-select>

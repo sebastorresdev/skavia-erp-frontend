@@ -196,9 +196,9 @@ import { MODULE_MENUS } from '../../core/constants/menus.config';
 
 export class MyComponent {
   private moduleService = inject(ModuleService);
-  
+
   accessibleModules = this.moduleService.getAccessibleModules(MODULE_MENUS);
-  
+
   canAccess(moduleId: string): boolean {
     return this.moduleService.canAccessModule(moduleId, MODULE_MENUS);
   }
