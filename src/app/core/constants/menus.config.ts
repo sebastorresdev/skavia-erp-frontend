@@ -6,7 +6,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'work-orders',
-    route: '/skavia/work-orders',
+    route: '/skavia/ordenes-trabajo',
     name: 'Órdenes de Trabajo',
     description: 'Gestión y seguimiento de órdenes de trabajo',
     icon: 'pi-file-edit',
@@ -17,25 +17,25 @@ export const MODULE_MENUS: SystemModule[] = [
       {
         label: 'Órdenes',
         items: [
-          { label: 'Bandeja', routerLink: '/skavia/work-orders/inbox' },
-          { label: 'Pendientes', routerLink: '/skavia/work-orders/pending' },
-          { label: 'Finalizadas', routerLink: '/skavia/work-orders/finalized' },
+          { label: 'Bandeja', routerLink: '/skavia/ordenes-trabajo/bandeja' },
+          { label: 'Pendientes', routerLink: '/skavia/ordenes-trabajo/pendientes' },
+          { label: 'Finalizadas', routerLink: '/skavia/ordenes-trabajo/finalizadas' },
         ],
       },
       {
         label: 'Reportes',
         items: [
-          { label: 'Por Técnico', routerLink: '/skavia/work-orders/reports/by-technician' },
-          { label: 'Productividad', routerLink: '/skavia/work-orders/reports/productivity' },
-          { label: 'Tiempos de Resolución', routerLink: '/skavia/work-orders/reports/resolution-times' },
+          { label: 'Por Técnico', routerLink: '/skavia/ordenes-trabajo/reportes/por-tecnico' },
+          { label: 'Productividad', routerLink: '/skavia/ordenes-trabajo/reportes/productividad' },
+          { label: 'Tiempos de Resolución', routerLink: '/skavia/ordenes-trabajo/reportes/tiempos-resolucion' },
         ],
       },
       {
         label: 'Configuración',
         items: [
-          { label: 'Tipos de Órdenes', routerLink: '/skavia/work-orders/config/types' },
-          { label: 'Prioridades', routerLink: '/skavia/work-orders/config/priorities' },
-          { label: 'Importaciones', routerLink: '/skavia/work-orders/imports' },
+          { label: 'Tipos de Órdenes', routerLink: '/skavia/ordenes-trabajo/config/tipos' },
+          { label: 'Prioridades', routerLink: '/skavia/ordenes-trabajo/config/prioridades' },
+          { label: 'Importaciones', routerLink: '/skavia/ordenes-trabajo/importaciones' },
         ],
       },
     ],
@@ -46,7 +46,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'inventory',
-    route: '/skavia/inventory',
+    route: '/skavia/inventario',
     name: 'Inventario',
     description: 'Gestión de stock, productos y almacenes',
     icon: 'pi-box',
@@ -57,24 +57,24 @@ export const MODULE_MENUS: SystemModule[] = [
       {
         label: 'Catálogos',
         items: [
-          { label: 'Productos', routerLink: '/skavia/inventory/products' },
-          { label: 'Categorías', routerLink: '/skavia/inventory/categories' },
-          { label: 'Almacenes', routerLink: '/skavia/inventory/warehouses' },
+          { label: 'Productos', routerLink: '/skavia/inventario/productos' },
+          { label: 'Categorías', routerLink: '/skavia/inventario/categorias' },
+          { label: 'Almacenes', routerLink: '/skavia/inventario/almacenes' },
         ],
       },
       {
         label: 'Movimientos',
         items: [
-          { label: 'Ingresos', routerLink: '/skavia/inventory/in' },
-          { label: 'Salidas', routerLink: '/skavia/inventory/out' },
-          { label: 'Transferencias', routerLink: '/skavia/inventory/transfers' },
+          { label: 'Ingresos', routerLink: '/skavia/inventario/ingresos' },
+          { label: 'Salidas', routerLink: '/skavia/inventario/salidas' },
+          { label: 'Transferencias', routerLink: '/skavia/inventario/transferencias' },
         ],
       },
       {
         label: 'Reportes',
         items: [
-          { label: 'Stock Actual', routerLink: '/skavia/inventory/reports/stock' },
-          { label: 'Kardex', routerLink: '/skavia/inventory/reports/kardex' },
+          { label: 'Stock Actual', routerLink: '/skavia/inventario/reportes/stock' },
+          { label: 'Kardex', routerLink: '/skavia/inventario/reportes/kardex' },
         ],
       },
     ],
@@ -85,7 +85,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'sales',
-    route: '/skavia/sales',
+    route: '/skavia/ventas',
     name: 'Ventas',
     description: 'Gestión de ventas y facturación',
     icon: 'pi-shopping-cart',
@@ -96,22 +96,22 @@ export const MODULE_MENUS: SystemModule[] = [
       {
         label: 'Operaciones',
         items: [
-          { label: 'Cotizaciones', routerLink: '/skavia/sales/quotes' },
-          { label: 'Pedidos', routerLink: '/skavia/sales/orders' },
-          { label: 'Facturas', routerLink: '/skavia/sales/invoices' },
+          { label: 'Cotizaciones', routerLink: '/skavia/ventas/cotizaciones' },
+          { label: 'Pedidos', routerLink: '/skavia/ventas/pedidos' },
+          { label: 'Facturas', routerLink: '/skavia/ventas/facturas' },
         ],
       },
       {
         label: 'Clientes',
         items: [
-          { label: 'Listado', routerLink: '/skavia/sales/customers' },
+          { label: 'Listado', routerLink: '/skavia/ventas/clientes' },
         ],
       },
       {
         label: 'Reportes',
         items: [
-          { label: 'Ventas Mensuales', routerLink: '/skavia/sales/reports/monthly' },
-          { label: 'Top Clientes', routerLink: '/skavia/sales/reports/top-customers' },
+          { label: 'Ventas Mensuales', routerLink: '/skavia/ventas/reportes/mensuales' },
+          { label: 'Top Clientes', routerLink: '/skavia/ventas/reportes/top-clientes' },
         ],
       },
     ],
@@ -122,7 +122,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'purchases',
-    route: '/skavia/purchases',
+    route: '/skavia/compras',
     name: 'Compras',
     description: 'Gestión de compras y proveedores',
     icon: 'pi-shopping-bag',
@@ -134,22 +134,22 @@ export const MODULE_MENUS: SystemModule[] = [
         label: 'Operaciones',
         icon: 'pi pi-file',
         items: [
-          { label: 'Órdenes de Compra', routerLink: '/skavia/purchases/orders' },
-          { label: 'Recepciones', routerLink: '/skavia/purchases/receipts' },
+          { label: 'Órdenes de Compra', routerLink: '/skavia/compras/ordenes' },
+          { label: 'Recepciones', routerLink: '/skavia/compras/recepciones' },
         ],
       },
       {
         label: 'Proveedores',
         icon: 'pi pi-truck',
         items: [
-          { label: 'Listado', routerLink: '/skavia/purchases/providers' },
+          { label: 'Listado', routerLink: '/skavia/compras/proveedores' },
         ],
       },
       {
         label: 'Reportes',
         icon: 'pi pi-chart-line',
         items: [
-          { label: 'Compras por Proveedor', routerLink: '/skavia/purchases/reports/by-provider' },
+          { label: 'Compras por Proveedor', routerLink: '/skavia/compras/reportes/por-proveedor' },
         ],
       },
     ],
@@ -160,7 +160,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'accounting',
-    route: '/skavia/accounting',
+    route: '/skavia/contabilidad',
     name: 'Contabilidad',
     description: 'Gestión contable y financiera',
     icon: 'pi-calculator',
@@ -172,16 +172,16 @@ export const MODULE_MENUS: SystemModule[] = [
         label: 'Contabilidad',
         icon: 'pi pi-book',
         items: [
-          { label: 'Asientos', routerLink: '/skavia/accounting/entries' },
-          { label: 'Plan Contable', routerLink: '/skavia/accounting/chart' },
+          { label: 'Asientos', routerLink: '/skavia/contabilidad/asientos' },
+          { label: 'Plan Contable', routerLink: '/skavia/contabilidad/plan-contable' },
         ],
       },
       {
         label: 'Reportes',
         icon: 'pi pi-chart-bar',
         items: [
-          { label: 'Balance General', routerLink: '/skavia/accounting/reports/balance' },
-          { label: 'Estado de Resultados', routerLink: '/skavia/accounting/reports/income' },
+          { label: 'Balance General', routerLink: '/skavia/contabilidad/reportes/balance' },
+          { label: 'Estado de Resultados', routerLink: '/skavia/contabilidad/reportes/resultados' },
         ],
       },
     ],
@@ -192,7 +192,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'hr',
-    route: '/skavia/hr',
+    route: '/skavia/recursos-humanos',
     name: 'Recursos Humanos',
     description: 'Gestión de personal y nómina',
     icon: 'pi-users',
@@ -204,15 +204,15 @@ export const MODULE_MENUS: SystemModule[] = [
         label: 'Empleados',
         icon: 'pi pi-id-card',
         items: [
-          { label: 'Listado', routerLink: '/skavia/hr/employees' },
-          { label: 'Asistencias', routerLink: '/skavia/hr/attendance' },
+          { label: 'Listado', routerLink: '/skavia/recursos-humanos/empleados' },
+          { label: 'Asistencias', routerLink: '/skavia/recursos-humanos/asistencias' },
         ],
       },
       {
         label: 'Nómina',
         icon: 'pi pi-wallet',
         items: [
-          { label: 'Planillas', routerLink: '/skavia/hr/payroll' },
+          { label: 'Planillas', routerLink: '/skavia/recursos-humanos/planillas' },
         ],
       },
     ],
@@ -223,7 +223,7 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'settings',
-    route: '/skavia/settings',
+    route: '/skavia/configuracion',
     name: 'Configuración',
     description: 'Configuración del sistema',
     icon: 'pi-cog',
@@ -231,10 +231,10 @@ export const MODULE_MENUS: SystemModule[] = [
     bgColor: 'bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900/40 dark:to-gray-800/20',
     requiredRoles: ['Admin'],
     items: [
-      { label: 'Usuarios', routerLink: '/skavia/users', icon: 'pi pi-users' },
+      { label: 'Usuarios', routerLink: '/skavia/usuarios', icon: 'pi pi-users' },
       { label: 'Roles', routerLink: '/skavia/roles', icon: 'pi pi-shield' },
-      { label: 'Compañías', routerLink: '/skavia/companies', icon: 'pi pi-building' },
-      { label: 'Parámetros', routerLink: '/skavia/settings', icon: 'pi pi-sliders-h' },
+      { label: 'Empresas', routerLink: '/skavia/empresas', icon: 'pi pi-building' },
+      { label: 'Parámetros', routerLink: '/skavia/configuracion/parametros', icon: 'pi pi-sliders-h' },
     ],
   },
 
@@ -243,14 +243,14 @@ export const MODULE_MENUS: SystemModule[] = [
   // =========================
   {
     id: 'about',
-    route: '/skavia/about',
+    route: '/skavia/acerca-de',
     name: 'Acerca de',
     description: 'Información del sistema',
     icon: 'pi-info-circle',
     iconColor: 'text-cyan-600',
     bgColor: 'bg-gradient-to-br from-cyan-50 to-cyan-100 dark:from-cyan-900/40 dark:to-cyan-800/20',
     items: [
-      { label: 'Información', routerLink: '/skavia/about' },
+      { label: 'Información', routerLink: '/skavia/acerca-de' },
     ],
   },
 ];
