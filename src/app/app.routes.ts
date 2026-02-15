@@ -20,19 +20,19 @@ export const routes: Routes = [
           import('./features/dashboard/dashboard').then((m) => m.DashboardComponent),
       },
       {
-        path: 'settings',
+        path: 'configuracion',
         loadChildren: () =>
           import('./features/settings/settings.routes').then((r) => r.settingsRoutes),
       },
       {
-        path: 'work-orders',
+        path: 'ordenes-trabajo',
         loadChildren: () =>
           import('./features/work-order-management/work-order-management.routes').then(
             (r) => r.workOrderManagementRoutes,
           ),
       },
       {
-        path: 'inventory',
+        path: 'inventario',
         loadComponent: () => import('./features/inventory/inventory').then((m) => m.Inventory),
       },
     ],
