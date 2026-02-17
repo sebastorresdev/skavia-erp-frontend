@@ -1,97 +1,66 @@
-<div class="min-h-screen bg-gray-50 p-6">
+<div class="min-h-screen bg-surface-ground p-6">
   <p-toast />
 
   <div class="w-full">
     <!-- Header -->
     <div class="mb-6">
-      <h1 class="text-3xl font-bold text-gray-900 mb-2">Órdenes de Trabajo Pendientes</h1>
-      <p class="text-gray-600">Gestiona y visualiza todas las órdenes de trabajo pendientes</p>
+      <h1 class="text-3xl font-bold text-surface-900 dark:text-surface-0 mb-2">Órdenes de Trabajo Pendientes</h1>
+      <p class="text-surface-600 dark:text-surface-400">Gestiona y visualiza todas las órdenes de trabajo pendientes</p>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div class="bg-surface-0 dark:bg-surface-800 rounded-lg shadow-sm border border-surface-200 dark:border-surface-700 p-4">
         <div class="flex items-center gap-3">
-          <div class="bg-blue-100 rounded-lg p-3">
-            <i class="pi pi-list text-blue-600 text-xl"></i>
+          <div class="bg-blue-100 dark:bg-blue-500/20 rounded-lg p-3">
+            <i class="pi pi-list text-blue-600 dark:text-blue-400 text-xl"></i>
           </div>
           <div>
-            <p class="text-gray-600 text-sm">Total Órdenes</p>
-            <p class="text-2xl font-bold text-gray-900">{{ ordenes.length }}</p>
+            <p class="text-surface-600 dark:text-surface-400 text-sm">Total Órdenes</p>
+            <p class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ ordenes.length }}</p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div class="bg-surface-0 dark:bg-surface-800 rounded-lg shadow-sm border border-surface-200 dark:border-surface-700 p-4">
         <div class="flex items-center gap-3">
-          <div class="bg-green-100 rounded-lg p-3">
-            <i class="pi pi-check-circle text-green-600 text-xl"></i>
+          <div class="bg-green-100 dark:bg-green-500/20 rounded-lg p-3">
+            <i class="pi pi-check-circle text-green-600 dark:text-green-400 text-xl"></i>
           </div>
           <div>
-            <p class="text-gray-600 text-sm">A Tiempo</p>
-            <p class="text-2xl font-bold text-gray-900">{{ getOrdenesATiempo() }}</p>
+            <p class="text-surface-600 dark:text-surface-400 text-sm">A Tiempo</p>
+            <p class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ getOrdenesATiempo() }}</p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div class="bg-surface-0 dark:bg-surface-800 rounded-lg shadow-sm border border-surface-200 dark:border-surface-700 p-4">
         <div class="flex items-center gap-3">
-          <div class="bg-yellow-100 rounded-lg p-3">
-            <i class="pi pi-exclamation-triangle text-yellow-600 text-xl"></i>
+          <div class="bg-yellow-100 dark:bg-yellow-500/20 rounded-lg p-3">
+            <i class="pi pi-exclamation-triangle text-yellow-600 dark:text-yellow-400 text-xl"></i>
           </div>
           <div>
-            <p class="text-gray-600 text-sm">Próximas</p>
-            <p class="text-2xl font-bold text-gray-900">{{ getOrdenesProximas() }}</p>
+            <p class="text-surface-600 dark:text-surface-400 text-sm">Próximas</p>
+            <p class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ getOrdenesProximas() }}</p>
           </div>
         </div>
       </div>
 
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div class="bg-surface-0 dark:bg-surface-800 rounded-lg shadow-sm border border-surface-200 dark:border-surface-700 p-4">
         <div class="flex items-center gap-3">
-          <div class="bg-red-100 rounded-lg p-3">
-            <i class="pi pi-times-circle text-red-600 text-xl"></i>
+          <div class="bg-red-100 dark:bg-red-500/20 rounded-lg p-3">
+            <i class="pi pi-times-circle text-red-600 dark:text-red-400 text-xl"></i>
           </div>
           <div>
-            <p class="text-gray-600 text-sm">Vencidas</p>
-            <p class="text-2xl font-bold text-gray-900">{{ getOrdenesVencidas() }}</p>
+            <p class="text-surface-600 dark:text-surface-400 text-sm">Vencidas</p>
+            <p class="text-2xl font-bold text-surface-900 dark:text-surface-0">{{ getOrdenesVencidas() }}</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Card container -->
-    <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-      <!-- Toolbar -->
-      <div class="p-4 border-b border-gray-200 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-        <div class="flex-1 w-full sm:w-auto">
-          <p-iconfield iconPosition="left" class="w-full sm:w-80">
-            <p-inputicon styleClass="pi pi-search" />
-            <input
-              pInputText
-              type="text"
-              placeholder="Buscar por orden, cliente, tarea..."
-              class="w-full"
-              #searchInput
-              (input)="dt.filterGlobal(searchInput.value, 'contains')"
-            />
-          </p-iconfield>
-        </div>
-        <div class="flex gap-2">
-          <p-button
-            icon="pi pi-file-excel"
-            label="Exportar"
-            severity="success"
-            (onClick)="exportarExcel()"
-            [outlined]="true"
-          />
-          <p-button
-            icon="pi pi-refresh"
-            label="Actualizar"
-            (onClick)="cargarOrdenes()"
-            [outlined]="true"
-          />
-        </div>
-      </div>
+    <div class="bg-surface-0 dark:bg-surface-800 rounded-lg shadow-sm border border-surface-200 dark:border-surface-700">
 
       <!-- Table -->
       <p-table
@@ -101,80 +70,203 @@
         [paginator]="true"
         [rows]="10"
         [rowsPerPageOptions]="[10, 25, 50]"
-        [globalFilterFields]="['numeroOrden', 'codigoCliente', 'nombreCompleto', 'provincia', 'distrito', 'descripcionTarea']"
+        [globalFilterFields]="['numeroOrden', 'codigoCliente', 'nombreCompleto', 'provincia', 'distrito', 'descripcionTarea', 'numeroTarea', 'agendamientoLinea']"
         [tableStyle]="{'min-width': '75rem'}"
         styleClass="p-datatable-sm"
         currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} órdenes"
         [showCurrentPageReport]="true"
+        showGridlines
       >
+        <!-- Caption / Toolbar -->
+        <ng-template pTemplate="caption">
+          <div class="flex items-center justify-between gap-4 flex-wrap">
+            <p-button
+              label="Limpiar filtros"
+              icon="pi pi-filter-slash"
+              [outlined]="true"
+              severity="secondary"
+              (onClick)="limpiarFiltros(dt)"
+            />
+            <div class="flex items-center gap-2 ml-auto flex-wrap">
+              <p-iconfield iconPosition="left">
+                <p-inputicon styleClass="pi pi-search" />
+                <input
+                  pInputText
+                  type="text"
+                  #searchInput
+                  (input)="dt.filterGlobal(searchInput.value, 'contains')"
+                  placeholder="Búsqueda global..."
+                />
+              </p-iconfield>
+              <p-button
+                icon="pi pi-file-excel"
+                label="Exportar"
+                severity="success"
+                [outlined]="true"
+                (onClick)="exportarExcel()"
+              />
+              <p-button
+                icon="pi pi-refresh"
+                label="Actualizar"
+                [outlined]="true"
+                (onClick)="cargarOrdenes()"
+              />
+            </div>
+          </div>
+        </ng-template>
+
         <ng-template pTemplate="header">
           <tr>
-            <th pSortableColumn="numeroOrden" style="min-width: 140px">
-              Nº Orden
-              <p-sortIcon field="numeroOrden" />
+            <!-- Nº Orden -->
+            <th style="min-width: 150px">
+              <div class="flex items-center justify-between">
+                Nº Orden
+                <p-columnFilter type="text" field="numeroOrden" display="menu" />
+              </div>
             </th>
-            <th pSortableColumn="numeroTarea" style="min-width: 120px">
-              Nº Tarea
-              <p-sortIcon field="numeroTarea" />
+
+            <!-- Nº Tarea -->
+            <th style="min-width: 130px">
+              <div class="flex items-center justify-between">
+                Nº Tarea
+                <p-columnFilter type="text" field="numeroTarea" display="menu" />
+              </div>
             </th>
-            <th pSortableColumn="codigoCliente" style="min-width: 130px">
-              Código Cliente
-              <p-sortIcon field="codigoCliente" />
+
+            <!-- Cód. Cliente -->
+            <th style="min-width: 130px">
+              <div class="flex items-center justify-between">
+                Cód. Cliente
+                <p-columnFilter type="text" field="codigoCliente" display="menu" />
+              </div>
             </th>
-            <th pSortableColumn="nombreCompleto" style="min-width: 200px">
-              Cliente
-              <p-sortIcon field="nombreCompleto" />
+
+            <!-- Cliente -->
+            <th style="min-width: 200px">
+              <div class="flex items-center justify-between">
+                Cliente
+                <p-columnFilter type="text" field="nombreCompleto" display="menu" />
+              </div>
             </th>
-            <th pSortableColumn="provincia" style="min-width: 120px">
-              Provincia
-              <p-sortIcon field="provincia" />
+
+            <!-- Provincia -->
+            <th style="min-width: 130px">
+              <div class="flex items-center justify-between">
+                Provincia
+                <p-columnFilter type="text" field="provincia" display="menu" />
+              </div>
             </th>
-            <th pSortableColumn="distrito" style="min-width: 130px">
-              Distrito
-              <p-sortIcon field="distrito" />
+
+            <!-- Distrito -->
+            <th style="min-width: 130px">
+              <div class="flex items-center justify-between">
+                Distrito
+                <p-columnFilter type="text" field="distrito" display="menu" />
+              </div>
             </th>
-            <th pSortableColumn="agendamientoLinea" style="min-width: 120px">
-              Línea
-              <p-sortIcon field="agendamientoLinea" />
+
+            <!-- Agend. Línea -->
+            <th style="min-width: 150px">
+              <div class="flex items-center justify-between">
+                Agend. Línea
+                <p-columnFilter
+                  field="agendamientoLinea"
+                  matchMode="equals"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                    <p-select
+                      [ngModel]="value"
+                      [options]="agendamientoOpciones"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccionar"
+                      (onChange)="filter($event.value)"
+                      class="w-full"
+                      [showClear]="true"
+                    />
+                  </ng-template>
+                </p-columnFilter>
+              </div>
             </th>
-            <th style="min-width: 250px">Descripción Tarea</th>
-            <th pSortableColumn="fechaVencimiento" style="min-width: 160px">
-              Vencimiento
-              <p-sortIcon field="fechaVencimiento" />
+
+            <!-- Descripción Tarea -->
+            <th style="min-width: 220px">
+              <div class="flex items-center justify-between">
+                Descripción Tarea
+                <p-columnFilter type="text" field="descripcionTarea" display="menu" />
+              </div>
             </th>
-            <th style="min-width: 120px">Acciones</th>
+
+            <!-- Vencimiento -->
+            <th style="min-width: 170px">
+              <div class="flex items-center justify-between">
+                Vencimiento
+                <p-columnFilter
+                  field="estadoVencimientoKey"
+                  matchMode="equals"
+                  display="menu"
+                  [showMatchModes]="false"
+                  [showOperator]="false"
+                  [showAddButton]="false"
+                >
+                  <ng-template pTemplate="filter" let-value let-filter="filterCallback">
+                    <p-select
+                      [ngModel]="value"
+                      [options]="vencimientoOpciones"
+                      optionLabel="label"
+                      optionValue="value"
+                      placeholder="Seleccionar"
+                      (onChange)="filter($event.value)"
+                      class="w-full"
+                      [showClear]="true"
+                    >
+                      <ng-template let-op pTemplate="item">
+                        <p-tag [value]="op.label" [severity]="op.severity" />
+                      </ng-template>
+                    </p-select>
+                  </ng-template>
+                </p-columnFilter>
+              </div>
+            </th>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="body" let-orden>
-          <tr class="hover:bg-gray-50">
+          <tr class="hover:bg-surface-50 dark:hover:bg-surface-700/50">
             <td>
-              <span class="font-semibold text-blue-700">{{ orden.numeroOrden }}</span>
+              <span
+                class="font-semibold text-blue-700 dark:text-blue-400 cursor-pointer hover:underline"
+                (click)="verDetalle(orden)"
+              >{{ orden.numeroOrden }}</span>
             </td>
             <td>
-              <span class="text-gray-700">{{ orden.numeroTarea }}</span>
+              <span class="text-surface-600 dark:text-surface-400 font-mono text-sm">{{ orden.numeroTarea }}</span>
             </td>
             <td>
-              <span class="text-gray-600 font-mono text-sm">{{ orden.codigoCliente }}</span>
+              <span class="text-surface-600 dark:text-surface-400 font-mono text-sm">{{ orden.codigoCliente }}</span>
             </td>
             <td>
-              <span class="font-medium text-gray-900">{{ orden.nombreCompleto }}</span>
+              <span class="font-medium text-surface-900 dark:text-surface-0">{{ orden.nombreCompleto }}</span>
             </td>
             <td>
-              <span class="text-gray-700">{{ orden.provincia }}</span>
+              <span class="text-surface-700 dark:text-surface-300">{{ orden.provincia }}</span>
             </td>
             <td>
-              <span class="text-gray-700">{{ orden.distrito }}</span>
+              <span class="text-surface-700 dark:text-surface-300">{{ orden.distrito }}</span>
             </td>
             <td>
               <p-tag [value]="orden.agendamientoLinea" [rounded]="true" />
             </td>
             <td>
-              <span class="text-gray-600 text-sm">{{ orden.descripcionTarea }}</span>
+              <span class="text-surface-600 dark:text-surface-400 text-sm">{{ orden.descripcionTarea }}</span>
             </td>
             <td>
               <div class="flex flex-col gap-1">
-                <span class="text-sm text-gray-700">
+                <span class="text-sm text-surface-700 dark:text-surface-300">
                   {{ orden.fechaVencimiento ? (orden.fechaVencimiento | date: 'dd/MM/yyyy') : '-' }}
                 </span>
                 <p-tag
@@ -185,27 +277,16 @@
                 />
               </div>
             </td>
-            <td>
-              <p-button
-                icon="pi pi-eye"
-                [rounded]="true"
-                [text]="true"
-                severity="info"
-                (onClick)="verDetalle(orden)"
-                pTooltip="Ver detalle"
-                tooltipPosition="top"
-              />
-            </td>
           </tr>
         </ng-template>
 
         <ng-template pTemplate="emptymessage">
           <tr>
-            <td colspan="10" class="text-center py-8">
+            <td colspan="9" class="text-center py-8">
               <div class="flex flex-col items-center gap-3">
-                <i class="pi pi-inbox text-gray-400" style="font-size: 3rem"></i>
-                <p class="text-gray-600 font-medium">No se encontraron órdenes de trabajo</p>
-                <p class="text-gray-500 text-sm">Intenta ajustar los filtros de búsqueda</p>
+                <i class="pi pi-inbox text-surface-400 dark:text-surface-500" style="font-size: 3rem"></i>
+                <p class="text-surface-600 dark:text-surface-400 font-medium">No se encontraron órdenes de trabajo</p>
+                <p class="text-surface-500 text-sm">Intenta ajustar los filtros de búsqueda</p>
               </div>
             </td>
           </tr>
@@ -213,9 +294,9 @@
 
         <ng-template pTemplate="loadingbody">
           <tr>
-            <td colspan="10">
+            <td colspan="9">
               <div class="flex items-center justify-center py-8">
-                <i class="pi pi-spin pi-spinner text-blue-600" style="font-size: 2rem"></i>
+                <i class="pi pi-spin pi-spinner text-primary" style="font-size: 2rem"></i>
               </div>
             </td>
           </tr>

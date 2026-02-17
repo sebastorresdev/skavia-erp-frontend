@@ -25,11 +25,11 @@ export class OrdenTrabajoService {
   // ===============================
   importarOrdenesTrabajo(
     file: File
-  ): Observable<ImportarOrdenTrabajoResponse[]> {
+  ): Observable<ImportarOrdenTrabajoResponse> {
     const formData = new FormData();
     formData.append('formFile', file);
 
-    return this.http.post<ImportarOrdenTrabajoResponse[]>(
+    return this.http.post<ImportarOrdenTrabajoResponse>(
       `${this.baseUrl}/importar`,
       formData
     );

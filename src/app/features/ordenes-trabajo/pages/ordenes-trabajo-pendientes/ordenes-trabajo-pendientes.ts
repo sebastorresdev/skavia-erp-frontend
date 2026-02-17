@@ -1,12 +1,15 @@
-import { Component, OnInit, inject, effect } from '@angular/core';
+import { Component, OnInit, inject, effect, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableModule } from 'primeng/table';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { TableModule, Table } from 'primeng/table';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
 import { TagModule } from 'primeng/tag';
 import { IconFieldModule } from 'primeng/iconfield';
 import { InputIconModule } from 'primeng/inputicon';
 import { ToastModule } from 'primeng/toast';
+import { SelectModule } from 'primeng/select';
 import { MessageService } from 'primeng/api';
 
 import { OrdenTrabajoService } from '../../services/orden-trabajo.service';
@@ -18,13 +21,15 @@ import { OrdenTrabajoPendiente } from '../../models/orden-trabajo-models';
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     TableModule,
     InputTextModule,
     ButtonModule,
     TagModule,
     IconFieldModule,
     InputIconModule,
-    ToastModule
+    ToastModule,
+    SelectModule,
   ],
   providers: [MessageService],
   templateUrl: './ordenes-trabajo-pendientes.html',
@@ -33,9 +38,12 @@ import { OrdenTrabajoPendiente } from '../../models/orden-trabajo-models';
       .p-datatable .p-datatable-thead > tr > th {
         font-weight: 600;
       }
-
       .p-iconfield input {
         padding-left: 2.5rem;
+      }
+      /* Fila de filtros compacta */
+      .p-datatable .p-datatable-thead > tr:nth-child(2) > th {
+        padding: 0.4rem 0.5rem;
       }
     }
   `]
@@ -44,37 +52,47 @@ export class OrdenesTrabajoPendientesComponent implements OnInit {
   private ordenTrabajoService = inject(OrdenTrabajoService);
   private sucursalState = inject(SucursalStateService);
   private messageService = inject(MessageService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
   ordenes: OrdenTrabajoPendiente[] = [];
-  loading: boolean = false;
+  loading = false;
+  private isInitialized = false;
+
+  // ── Opciones de filtros ─────────────────────────────────────────────
+  agendamientoOpciones = [
+    { label: 'Sí', value: 'Si' },
+    { label: 'No', value: 'No' },
+  ];
+
+  vencimientoOpciones = [
+    { label: 'A tiempo',  value: 'atiempo',  severity: 'success' },
+    { label: 'Próximo',   value: 'proximo',  severity: 'warn'    },
+    { label: 'Vencido',   value: 'vencido',  severity: 'danger'  },
+    { label: 'Sin fecha', value: 'sinfecha', severity: 'info'    },
+  ];
 
   constructor() {
-    // Reaccionar a cambios en la sucursal seleccionada
     effect(() => {
       const codigoSucursal = this.sucursalState.selectedSucursalCodigo();
-      if (codigoSucursal) {
-        this.cargarOrdenes();
+      if (codigoSucursal && this.isInitialized) {
+        setTimeout(() => this.cargarOrdenes());
       }
     });
   }
 
   ngOnInit() {
-    // Cargar órdenes si ya hay una sucursal seleccionada
+    this.isInitialized = true;
     const codigoSucursal = this.sucursalState.getSucursalCodigo();
     if (codigoSucursal) {
       this.cargarOrdenes();
-    } else {
-      this.loading = false;
     }
   }
 
   cargarOrdenes() {
     const codigoSucursal = this.sucursalState.getSucursalCodigo();
-
     if (!codigoSucursal) {
-      console.warn('⚠️ No se puede cargar órdenes sin código de sucursal');
       this.ordenes = [];
-      this.loading = false;
       return;
     }
 
@@ -83,7 +101,11 @@ export class OrdenesTrabajoPendientesComponent implements OnInit {
     this.ordenTrabajoService.obtenerOrdenesTrabajoPendientes(codigoSucursal)
       .subscribe({
         next: (data) => {
-          this.ordenes = data;
+          // Agregar campo calculado estadoVencimientoKey a cada orden para el filtro
+          this.ordenes = data.map(o => ({
+            ...o,
+            estadoVencimientoKey: this.getSeverityKey(o.fechaVencimiento)
+          }));
           this.loading = false;
           this.messageService.add({
             severity: 'success',
@@ -91,6 +113,7 @@ export class OrdenesTrabajoPendientesComponent implements OnInit {
             detail: `Se cargaron ${data.length} órdenes pendientes`,
             life: 3000
           });
+          this.cdr.markForCheck();
         },
         error: (error) => {
           console.error('Error al cargar órdenes:', error);
@@ -102,53 +125,71 @@ export class OrdenesTrabajoPendientesComponent implements OnInit {
             detail: 'No se pudieron cargar las órdenes de trabajo',
             life: 5000
           });
+          this.cdr.markForCheck();
         }
       });
   }
 
-  getSeverity(fechaVencimiento: string | null): 'success' | 'info' | 'warn' | 'danger' {
-    if (!fechaVencimiento) return 'info';
-
-    const hoy = new Date();
-    const vencimiento = new Date(fechaVencimiento);
-    const diferenciaDias = Math.floor((vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diferenciaDias < 0) return 'danger';
-    if (diferenciaDias <= 2) return 'warn';
-    return 'success';
+  // ── Limpiar todos los filtros ───────────────────────────────────────
+  limpiarFiltros(table: Table) {
+    table.clear();
   }
 
-  getEstadoVencimiento(fechaVencimiento: string | null): string {
-    if (!fechaVencimiento) return 'Sin fecha';
-
-    const hoy = new Date();
-    const vencimiento = new Date(fechaVencimiento);
-    const diferenciaDias = Math.floor((vencimiento.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diferenciaDias < 0) return 'Vencido';
-    if (diferenciaDias === 0) return 'Hoy';
-    if (diferenciaDias <= 2) return 'Próximo';
-    return 'A tiempo';
-  }
-
-  exportarExcel() {
-    // Implementar exportación a Excel
-    console.log('Exportar a Excel');
-  }
-
-  verDetalle(orden: OrdenTrabajoPendiente) {
-    console.log('Ver detalle de orden:', orden);
-  }
-
+  // ── Estadísticas ────────────────────────────────────────────────────
   getOrdenesATiempo(): number {
-    return this.ordenes.filter(o => this.getSeverity(o.fechaVencimiento) === 'success').length;
+    return this.ordenes.filter(o => this.getSeverityKey(o.fechaVencimiento) === 'atiempo').length;
   }
 
   getOrdenesProximas(): number {
-    return this.ordenes.filter(o => this.getSeverity(o.fechaVencimiento) === 'warn').length;
+    return this.ordenes.filter(o => this.getSeverityKey(o.fechaVencimiento) === 'proximo').length;
   }
 
   getOrdenesVencidas(): number {
-    return this.ordenes.filter(o => this.getSeverity(o.fechaVencimiento) === 'danger').length;
+    return this.ordenes.filter(o => this.getSeverityKey(o.fechaVencimiento) === 'vencido').length;
+  }
+
+  // ── Helpers de vencimiento ──────────────────────────────────────────
+  private getSeverityKey(fechaVencimiento: string | null): string {
+    if (!fechaVencimiento) return 'sinfecha';
+    const dias = this.diasHastaVencimiento(fechaVencimiento);
+    if (dias < 0)  return 'vencido';
+    if (dias <= 2) return 'proximo';
+    return 'atiempo';
+  }
+
+  private diasHastaVencimiento(fecha: string): number {
+    const hoy = new Date();
+    const venc = new Date(fecha);
+    return Math.floor((venc.getTime() - hoy.getTime()) / (1000 * 60 * 60 * 24));
+  }
+
+  getSeverity(fecha: string | null): 'success' | 'info' | 'warn' | 'danger' {
+    const key = this.getSeverityKey(fecha);
+    const map: Record<string, 'success' | 'info' | 'warn' | 'danger'> = {
+      atiempo:  'success',
+      proximo:  'warn',
+      vencido:  'danger',
+      sinfecha: 'info',
+    };
+    return map[key];
+  }
+
+  getEstadoVencimiento(fecha: string | null): string {
+    const map: Record<string, string> = {
+      atiempo:  'A tiempo',
+      proximo:  'Próximo',
+      vencido:  'Vencido',
+      sinfecha: 'Sin fecha',
+    };
+    return map[this.getSeverityKey(fecha)];
+  }
+
+  // ── Navegación ──────────────────────────────────────────────────────
+  verDetalle(orden: OrdenTrabajoPendiente) {
+    this.router.navigate(['/ordenes-trabajo/detalle', orden.tareaId]);
+  }
+
+  exportarExcel() {
+    console.log('Exportar a Excel');
   }
 }

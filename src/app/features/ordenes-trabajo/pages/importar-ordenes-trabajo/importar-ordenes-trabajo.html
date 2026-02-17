@@ -1,0 +1,227 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <p-toast />
+
+  <div class="w-full max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">Importar Órdenes de Trabajo</h1>
+          <p class="text-gray-600">Carga masiva de órdenes de trabajo desde archivo Excel</p>
+        </div>
+        <button
+          pButton
+          icon="pi pi-arrow-left"
+          label="Volver"
+          class="p-button-outlined"
+          (click)="goToOrdenesPendientes()"
+        ></button>
+      </div>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+      <div class="flex gap-3">
+        <i class="pi pi-info-circle text-blue-600 text-xl mt-0.5"></i>
+        <div class="flex-1">
+          <h3 class="font-semibold text-blue-900 mb-2">Instrucciones para la importación</h3>
+          <ul class="text-sm text-blue-800 space-y-1 list-disc list-inside">
+            <li>El archivo debe estar en formato Excel (.xlsx o .xls)</li>
+            <li>Tamaño máximo: 10 MB</li>
+            <li>Asegúrate de usar la plantilla oficial para evitar errores</li>
+            <li>Las tareas duplicadas serán omitidas automáticamente</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Section -->
+    <div class="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
+      <div class="p-6">
+        <h2 class="text-xl font-semibold text-gray-900 mb-4">Seleccionar Archivo</h2>
+
+        <p-fileUpload
+          #fileUpload
+          name="file"
+          [customUpload]="true"
+          (uploadHandler)="onUpload($event)"
+          (onSelect)="onFileSelect($event)"
+          (onRemove)="onRemove()"
+          [accept]="acceptedFormats"
+          [maxFileSize]="maxFileSize"
+          [showUploadButton]="!uploadCompleted()"
+          [showCancelButton]="false"
+          [disabled]="uploading()"
+          [auto]="false"
+          chooseLabel="Seleccionar Excel"
+          uploadLabel="Importar Órdenes"
+          cancelLabel="Cancelar"
+          chooseIcon="pi pi-file-excel"
+          uploadIcon="pi pi-upload"
+          [multiple]="false"
+        >
+          <ng-template pTemplate="content" let-files>
+            @if (files.length === 0 && !uploadCompleted()) {
+              <div class="flex flex-col items-center justify-center py-12">
+                <i class="pi pi-cloud-upload text-gray-400 mb-4" style="font-size: 4rem"></i>
+                <p class="text-gray-600 font-medium mb-2">Arrastra tu archivo Excel aquí</p>
+                <p class="text-gray-500 text-sm">o haz clic en "Seleccionar Excel"</p>
+              </div>
+            }
+
+            @if (uploading()) {
+              <div class="flex flex-col items-center justify-center py-12">
+                <i class="pi pi-spin pi-spinner text-blue-600 mb-4" style="font-size: 3rem"></i>
+                <p class="text-gray-700 font-medium mb-2">Importando órdenes de trabajo...</p>
+                <p class="text-gray-500 text-sm">Por favor espera mientras procesamos el archivo</p>
+                <p-progressBar mode="indeterminate" class="w-full max-w-md mt-4" />
+              </div>
+            }
+          </ng-template>
+        </p-fileUpload>
+      </div>
+    </div>
+
+    <!-- Resultados de la Importación -->
+    @if (uploadCompleted() && uploadResult()) {
+      <div class="space-y-6">
+        <!-- Resumen de Resultados -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-semibold text-gray-900">Resultado de la Importación</h2>
+            <button
+              pButton
+              icon="pi pi-refresh"
+              label="Nueva Importación"
+              class="p-button-outlined"
+              (click)="resetUpload()"
+            ></button>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Tareas Importadas -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div class="flex items-center gap-3">
+                <div class="bg-green-500 rounded-lg p-3">
+                  <i class="pi pi-check-circle text-white text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-green-700 text-sm font-medium">Tareas Importadas</p>
+                  <p class="text-3xl font-bold text-green-900">{{ uploadResult()!.totalTareasImportadas }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tareas Repetidas -->
+            <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <div class="flex items-center gap-3">
+                <div class="bg-yellow-500 rounded-lg p-3">
+                  <i class="pi pi-exclamation-triangle text-white text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-yellow-700 text-sm font-medium">Tareas Repetidas</p>
+                  <p class="text-3xl font-bold text-yellow-900">{{ uploadResult()!.totalTareasRepetidas }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tareas Omitidas -->
+            <div class="bg-orange-50 border border-orange-200 rounded-lg p-4">
+              <div class="flex items-center gap-3">
+                <div class="bg-orange-500 rounded-lg p-3">
+                  <i class="pi pi-times-circle text-white text-2xl"></i>
+                </div>
+                <div>
+                  <p class="text-orange-700 text-sm font-medium">Tareas Omitidas</p>
+                  <p class="text-3xl font-bold text-orange-900">{{ uploadResult()!.totalOmitidos }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mensaje de Éxito -->
+          @if (uploadResult()!.totalTareasImportadas > 0) {
+            <div class="mt-6">
+              <p-message
+                severity="success"
+                styleClass="w-full"
+              >
+              Se importaron exitosamente {{uploadResult()!.totalTareasImportadas}} tareas. Ya están disponibles en el sistema.
+            </p-message>
+            </div>
+          }
+        </div>
+
+        <!-- Tabla de Tareas Omitidas -->
+        @if (uploadResult()!.tareasOmitidas.length > 0) {
+          <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="p-6 border-b border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900">
+                Tareas Omitidas ({{ uploadResult()!.tareasOmitidas.length }})
+              </h3>
+              <p class="text-gray-600 text-sm mt-1">
+                Las siguientes tareas no pudieron ser importadas
+              </p>
+            </div>
+
+            <p-table
+              [value]="uploadResult()!.tareasOmitidas"
+              [paginator]="true"
+              [rows]="10"
+              [rowsPerPageOptions]="[10, 25, 50]"
+              class="p-datatable-sm"
+              currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} tareas omitidas"
+              [showCurrentPageReport]="true"
+            >
+              <ng-template pTemplate="header">
+                <tr>
+                  <th style="width: 30%">Número de Tarea</th>
+                  <th style="width: 50%">Motivo</th>
+                  <th style="width: 20%">Estado</th>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="body" let-tarea>
+                <tr>
+                  <td>
+                    <span class="font-mono font-semibold text-gray-900">{{ tarea.numeroTarea }}</span>
+                  </td>
+                  <td>
+                    <span class="text-gray-700 text-sm">{{ tarea.motivo }}</span>
+                  </td>
+                  <td>
+                    <p-tag
+                      [value]="'Omitida'"
+                      [severity]="getSeverityByMotivo(tarea.motivo)"
+                      [rounded]="true"
+                    />
+                  </td>
+                </tr>
+              </ng-template>
+
+              <ng-template pTemplate="emptymessage">
+                <tr>
+                  <td colspan="3" class="text-center py-8">
+                    <i class="pi pi-check-circle text-green-500 text-4xl mb-3"></i>
+                    <p class="text-gray-600 font-medium">No hay tareas omitidas</p>
+                  </td>
+                </tr>
+              </ng-template>
+            </p-table>
+          </div>
+        }
+
+        <!-- Acciones Finales -->
+        <div class="flex justify-end gap-3">
+          <button
+            pButton
+            icon="pi pi-list"
+            label="Ver Órdenes Pendientes"
+            (click)="goToOrdenesPendientes()"
+          ></button>
+        </div>
+      </div>
+    }
+  </div>
+</div>
