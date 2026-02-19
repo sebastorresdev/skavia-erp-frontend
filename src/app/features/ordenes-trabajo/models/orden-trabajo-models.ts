@@ -77,6 +77,8 @@ export interface VisitaTecnica {
 export interface Interaccion {
   estado: string;
   descripcion: string;
+  usuario: string;
+  fechaRegistro: string;
 }
 
 // ===============================

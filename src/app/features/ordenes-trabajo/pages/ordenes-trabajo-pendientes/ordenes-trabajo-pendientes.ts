@@ -186,7 +186,7 @@ export class OrdenesTrabajoPendientesComponent implements OnInit {
 
   // ── Navegación ──────────────────────────────────────────────────────
   verDetalle(orden: OrdenTrabajoPendiente) {
-    this.router.navigate(['/ordenes-trabajo/detalle', orden.tareaId]);
+    this.router.navigate(['skavia/ordenes-trabajo/detalle', orden.numeroOrden]);
   }
 
   exportarExcel() {
